@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111827" />
+    <meta name="description" content="SkillSwap — teach what you know, learn what you love." />
+    <title>SkillSwap</title>
+    <script>
+      try {
+        const settings = JSON.parse(localStorage.getItem("skillswap_settings") || "{}");
+        if (settings.darkMode === true) {
+          document.documentElement.classList.add("skillswap-dark");
+        }
+      } catch (error) {
+        console.warn("Could not read the saved SkillSwap theme preference.", error);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
