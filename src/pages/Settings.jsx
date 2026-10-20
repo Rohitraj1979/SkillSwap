@@ -30,9 +30,16 @@ export default function Settings() {
 
   const profile = (() => {
     try {
-      return JSON.parse(
+      const saved = JSON.parse(
         localStorage.getItem("skillswap_profile") || "{}"
       );
+      if (!saved || typeof saved !== "object" || Array.isArray(saved)) return {};
+      return {
+        ...saved,
+        name: typeof saved.name === "string" ? saved.name : "",
+        role: typeof saved.role === "string" ? saved.role : "",
+        location: typeof saved.location === "string" ? saved.location : "",
+      };
     } catch {
       return {};
     }
