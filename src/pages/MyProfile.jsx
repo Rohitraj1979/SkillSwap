@@ -10,8 +10,20 @@ const defaultProfile = {
 };
 
 function loadProfile() {
-  try { return { ...defaultProfile, ...JSON.parse(localStorage.getItem("skillswap_profile") || "null") }; }
-  catch { return defaultProfile; }
+  try {
+    const stored = JSON.parse(localStorage.getItem("skillswap_profile") || "null");
+    const savedProfile = stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {};
+    const profile = { ...defaultProfile, ...savedProfile };
+    const validSkills = (skills) => Array.isArray(skills) && skills.every((skill) => typeof skill === "string" && skill.trim());
+
+    return {
+      ...profile,
+      teaches: validSkills(savedProfile.teaches) ? savedProfile.teaches : defaultProfile.teaches,
+      wantsToLearn: validSkills(savedProfile.wantsToLearn) ? savedProfile.wantsToLearn : defaultProfile.wantsToLearn,
+    };
+  } catch {
+    return defaultProfile;
+  }
 }
 
 export default function MyProfile() {
