@@ -8,7 +8,21 @@ const defaultIncoming = [
 function load(key, fallback) {
   try {
     const saved = localStorage.getItem(key);
-    if (saved !== null) return JSON.parse(saved);
+    if (saved !== null) {
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(request =>
+        request &&
+        typeof request === "object" &&
+        (typeof request.id === "string" || (typeof request.id === "number" && Number.isFinite(request.id))) &&
+        String(request.id).trim() &&
+        typeof request.name === "string" &&
+        request.name.trim() &&
+        typeof request.role === "string" &&
+        typeof request.message === "string" &&
+        (request.status === "pending" || request.status === "accepted" || request.status === "connected")
+      );
+    }
     localStorage.setItem(key, JSON.stringify(fallback));
     return fallback;
   } catch { return fallback; }
