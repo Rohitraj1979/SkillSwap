@@ -3,8 +3,20 @@ import { Link } from "react-router-dom";
 
 export default function Connections() {
   const [connections, setConnections] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("skillswap_connections") || "[]"); }
-    catch { return []; }
+    try {
+      const parsed = JSON.parse(localStorage.getItem("skillswap_connections") || "[]");
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(connection =>
+        connection &&
+        typeof connection === "object" &&
+        (typeof connection.id === "string" || (typeof connection.id === "number" && Number.isFinite(connection.id))) &&
+        String(connection.id).trim() &&
+        typeof connection.name === "string" &&
+        connection.name.trim() &&
+        typeof connection.role === "string" &&
+        typeof connection.message === "string"
+      );
+    } catch { return []; }
   });
 
   const remove = id => {
