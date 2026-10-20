@@ -18,6 +18,18 @@ function readStorageObject(key) {
   }
 }
 
+function isValidRequest(request) {
+  return request &&
+    typeof request === "object" &&
+    (typeof request.id === "string" || (typeof request.id === "number" && Number.isFinite(request.id))) &&
+    String(request.id).trim() &&
+    typeof request.name === "string" &&
+    request.name.trim() &&
+    typeof request.role === "string" &&
+    typeof request.message === "string" &&
+    (request.status === "pending" || request.status === "accepted" || request.status === "connected");
+}
+
 const sampleUsers = {
   "1": { id: "1", name: "Aarav Sharma", role: "Frontend Developer", location: "Mumbai, India", about: "I enjoy building accessible, polished web interfaces and sharing frontend knowledge.", teaches: ["React", "JavaScript", "HTML", "CSS"], wantsToLearn: ["Java", "Spring Boot"] },
   "2": { id: "2", name: "Rahul Mehta", role: "Java Developer", location: "Pune, India", about: "Java developer interested in backend engineering, APIs and collaborative learning.", teaches: ["Java", "Spring Boot", "SQL"], wantsToLearn: ["React", "JavaScript"] },
@@ -32,7 +44,7 @@ export default function UserProfile() {
 
   const sendRequest = () => {
     const requests = readStorageArray("skillswap_requests");
-    if (requests.some(request => request && String(request.id) === String(person.id))) {
+    if (requests.some(request => isValidRequest(request) && String(request.id) === String(person.id))) {
       navigate("/requests");
       return;
     }
@@ -40,7 +52,10 @@ export default function UserProfile() {
     const teaches = Array.isArray(profile?.teaches)
       ? profile.teaches.filter(skill => typeof skill === "string" && skill.trim())
       : [];
-    requests.push({ id: person.id, name: person.name, role: person.role, message: `I'd like to exchange skills with you. I can teach ${teaches.join(", ")} and would like to learn from you.`, status: "pending" });
+    const message = teaches.length
+      ? `I'd like to exchange skills with you. I can teach ${teaches.join(", ")} and would like to learn from you.`
+      : "I'd like to exchange skills with you and would like to learn from you.";
+    requests.push({ id: person.id, name: person.name, role: person.role, message, status: "pending" });
     localStorage.setItem("skillswap_requests", JSON.stringify(requests));
     navigate("/requests");
   };
