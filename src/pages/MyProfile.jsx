@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const defaultProfile = {
-  name: "Rohit Rajbhar",
+  name: "SkillSwap member",
   role: "Java Full Stack Developer",
   location: "Mumbai, India",
   about: "I'm interested in software development and learning new technologies through skill exchange.",
@@ -30,11 +30,12 @@ export default function MyProfile() {
     e.preventDefault();
     const updated = {
       ...form,
-      name: form.name.trim() || "Rohit Rajbhar",
+      name: form.name.trim() || "SkillSwap member",
       teaches: form.teaches.split(",").map(s => s.trim()).filter(Boolean),
       wantsToLearn: form.wantsToLearn.split(",").map(s => s.trim()).filter(Boolean),
     };
     localStorage.setItem("skillswap_profile", JSON.stringify(updated));
+    window.dispatchEvent(new Event("skillswap-profile-updated"));
     setProfile(updated);
     setForm({ ...updated, teaches: updated.teaches.join(", "), wantsToLearn: updated.wantsToLearn.join(", ") });
     setEditing(false);

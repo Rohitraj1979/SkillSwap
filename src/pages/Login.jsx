@@ -19,6 +19,7 @@ export default function Login() {
       return;
     }
     setError("");
+    window.dispatchEvent(new Event("skillswap-profile-updated"));
     navigate("/dashboard");
   };
 
