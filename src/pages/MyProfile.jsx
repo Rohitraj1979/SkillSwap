@@ -18,6 +18,10 @@ function loadProfile() {
 
     return {
       ...profile,
+      name: typeof profile.name === "string" && profile.name.trim() ? profile.name : defaultProfile.name,
+      role: typeof profile.role === "string" ? profile.role : defaultProfile.role,
+      location: typeof profile.location === "string" ? profile.location : defaultProfile.location,
+      about: typeof profile.about === "string" ? profile.about : defaultProfile.about,
       teaches: validSkills(savedProfile.teaches) ? savedProfile.teaches : defaultProfile.teaches,
       wantsToLearn: validSkills(savedProfile.wantsToLearn) ? savedProfile.wantsToLearn : defaultProfile.wantsToLearn,
     };
