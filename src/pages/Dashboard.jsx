@@ -9,10 +9,33 @@ function readStorageObject(key) {
   }
 }
 
-function readStorageArray(key) {
+function isValidRequest(request) {
+  return request &&
+    typeof request === "object" &&
+    (typeof request.id === "string" || (typeof request.id === "number" && Number.isFinite(request.id))) &&
+    String(request.id).trim() &&
+    typeof request.name === "string" &&
+    request.name.trim() &&
+    typeof request.role === "string" &&
+    typeof request.message === "string" &&
+    (request.status === "pending" || request.status === "accepted" || request.status === "connected");
+}
+
+function isValidConnection(connection) {
+  return connection &&
+    typeof connection === "object" &&
+    (typeof connection.id === "string" || (typeof connection.id === "number" && Number.isFinite(connection.id))) &&
+    String(connection.id).trim() &&
+    typeof connection.name === "string" &&
+    connection.name.trim() &&
+    typeof connection.role === "string" &&
+    typeof connection.message === "string";
+}
+
+function readStorageArray(key, isValidRecord) {
   try {
     const value = JSON.parse(localStorage.getItem(key) || "[]");
-    return Array.isArray(value) ? value : [];
+    return Array.isArray(value) ? value.filter(isValidRecord) : [];
   } catch {
     return [];
   }
@@ -26,8 +49,8 @@ const quickActions = [
 
 export default function Dashboard() {
   const profile = readStorageObject("skillswap_profile");
-  const requests = readStorageArray("skillswap_requests");
-  const connections = readStorageArray("skillswap_connections");
+  const requests = readStorageArray("skillswap_requests", isValidRequest);
+  const connections = readStorageArray("skillswap_connections", isValidConnection);
   const firstName = typeof profile?.name === "string" ? profile.name.trim().split(/\s+/)[0] : "";
   return (
     <section className="page-content">
