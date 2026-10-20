@@ -31,18 +31,30 @@ export default function MyProfile() {
   const [form, setForm] = useState(() => ({ ...loadProfile(), teaches: loadProfile().teaches.join(", "), wantsToLearn: loadProfile().wantsToLearn.join(", ") }));
   const [editing, setEditing] = useState(false);
   const [savedMessage, setSavedMessage] = useState("");
+  const [error, setError] = useState("");
 
-  const update = e => setForm(current => ({ ...current, [e.target.name]: e.target.value }));
+  const update = e => {
+    setForm(current => ({ ...current, [e.target.name]: e.target.value }));
+    setError("");
+  };
   const edit = () => {
     setForm({ ...profile, teaches: profile.teaches.join(", "), wantsToLearn: profile.wantsToLearn.join(", ") });
     setEditing(true);
     setSavedMessage("");
+    setError("");
   };
   const save = e => {
     e.preventDefault();
+    const role = form.role.trim();
+    if (!role) {
+      setError("Please enter a role.");
+      return;
+    }
+    setError("");
     const updated = {
       ...form,
       name: form.name.trim() || "SkillSwap member",
+      role,
       teaches: form.teaches.split(",").map(s => s.trim()).filter(Boolean),
       wantsToLearn: form.wantsToLearn.split(",").map(s => s.trim()).filter(Boolean),
     };
@@ -58,8 +70,9 @@ export default function MyProfile() {
     <div className="page-heading profile-page-heading"><div><span className="eyebrow">MY PROFILE</span><h1>Your Profile</h1><p>Manage the information other SkillSwap members see about you.</p></div>{!editing && <button className="button button-dark" onClick={edit}>Edit Profile</button>}</div>
     {savedMessage && <div className="success-message">{savedMessage}</div>}
     {editing ? <form className="profile-edit-card" onSubmit={save}>
+      {error && <div className="form-error" role="alert">{error}</div>}
       <label>Name<input name="name" value={form.name} onChange={update} required /></label>
-      <label>Role<input name="role" value={form.role} onChange={update} required /></label>
+      <label>Role<input name="role" value={form.role} onChange={update} /></label>
       <label>Location<input name="location" value={form.location} onChange={update} /></label>
       <label>About<textarea name="about" rows="4" value={form.about} onChange={update} /></label>
       <label>Skills I Teach<input name="teaches" value={form.teaches} onChange={update} placeholder="Java, React, SQL" /><small>Separate skills with commas.</small></label>
