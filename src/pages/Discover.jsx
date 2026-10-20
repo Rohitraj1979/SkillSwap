@@ -70,11 +70,7 @@ export default function Discover() {
     catch { return null; }
   }, []);
 
-  const people = useMemo(() => {
-    const list = [...defaultPeople];
-    if (myProfile) list.unshift({ id: "me", ...myProfile });
-    return list;
-  }, [myProfile]);
+  const people = useMemo(() => [...defaultPeople], []);
 
   const allSkills = useMemo(() => {
     const skills = people.flatMap((person) => [

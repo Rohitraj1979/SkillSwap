@@ -29,6 +29,7 @@ export default function Register() {
       teaches: ["Java", "HTML", "CSS", "JavaScript"],
       wantsToLearn: ["Spring Boot", "React", "SQL"]
     }));
+    window.dispatchEvent(new Event("skillswap-profile-updated"));
     setError("");
     navigate("/profile");
   };

@@ -1,5 +1,23 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+function readStorageArray(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
+function readStorageObject(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "null");
+    return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
 const sampleUsers = {
   "1": { id: "1", name: "Aarav Sharma", role: "Frontend Developer", location: "Mumbai, India", about: "I enjoy building accessible, polished web interfaces and sharing frontend knowledge.", teaches: ["React", "JavaScript", "HTML", "CSS"], wantsToLearn: ["Java", "Spring Boot"] },
   "2": { id: "2", name: "Rahul Mehta", role: "Java Developer", location: "Pune, India", about: "Java developer interested in backend engineering, APIs and collaborative learning.", teaches: ["Java", "Spring Boot", "SQL"], wantsToLearn: ["React", "JavaScript"] },
@@ -13,12 +31,16 @@ export default function UserProfile() {
   const person = sampleUsers[id];
 
   const sendRequest = () => {
-    const requests = JSON.parse(localStorage.getItem("skillswap_requests") || "[]");
-    if (requests.some(request => String(request.id) === String(person.id))) {
+    const requests = readStorageArray("skillswap_requests");
+    if (requests.some(request => request && String(request.id) === String(person.id))) {
       navigate("/requests");
       return;
     }
-    requests.push({ id: person.id, name: person.name, role: person.role, message: `I'd like to exchange skills with you. I can teach ${(JSON.parse(localStorage.getItem("skillswap_profile") || "{}").teaches || []).join(", ")} and would like to learn from you.`, status: "pending" });
+    const profile = readStorageObject("skillswap_profile");
+    const teaches = Array.isArray(profile?.teaches)
+      ? profile.teaches.filter(skill => typeof skill === "string" && skill.trim())
+      : [];
+    requests.push({ id: person.id, name: person.name, role: person.role, message: `I'd like to exchange skills with you. I can teach ${teaches.join(", ")} and would like to learn from you.`, status: "pending" });
     localStorage.setItem("skillswap_requests", JSON.stringify(requests));
     navigate("/requests");
   };

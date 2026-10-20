@@ -1,5 +1,23 @@
 import { Link } from "react-router-dom";
 
+function readStorageObject(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "null");
+    return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function readStorageArray(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
 const quickActions = [
   { title: "Discover people", text: "Find your next skill exchange.", to: "/discover", icon: "⌕" },
   { title: "Manage requests", text: "Review incoming and sent requests.", to: "/requests", icon: "↔" },
@@ -7,14 +25,15 @@ const quickActions = [
 ];
 
 export default function Dashboard() {
-  const profile = JSON.parse(localStorage.getItem("skillswap_profile") || "null");
-  const requests = JSON.parse(localStorage.getItem("skillswap_requests") || "[]");
-  const connections = JSON.parse(localStorage.getItem("skillswap_connections") || "[]");
+  const profile = readStorageObject("skillswap_profile");
+  const requests = readStorageArray("skillswap_requests");
+  const connections = readStorageArray("skillswap_connections");
+  const firstName = typeof profile?.name === "string" ? profile.name.trim().split(/\s+/)[0] : "";
   return (
     <section className="page-content">
       <div className="page-heading">
         <span className="eyebrow">YOUR SPACE</span>
-        <h1>Welcome back{profile?.name ? `, ${profile.name.split(" ")[0]}` : ""}.</h1>
+        <h1>Welcome back{firstName ? `, ${firstName}` : ""}.</h1>
         <p>Keep learning, keep sharing, and make your next connection.</p>
       </div>
       <div className="stats-grid">
